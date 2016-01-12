@@ -1,0 +1,291 @@
+.shakecenter{
+	position: relative;
+	.titlesz26{
+			font-size: 26px !important;
+		}
+	//头部文字样式
+	.shaketitle{
+		font-size: 16px;
+		text-align: center;
+		margin-top: 20px;
+		p{
+			display: inline;
+			color: #b41729;
+		}
+	}
+	//中部背景图
+	.shakebg{
+		height: 70%;
+		width: 100%;
+		background: url('../assets/images/shakecenter.jpg') no-repeat;
+		background-size: 100% 100%;
+		position: fixed;
+		bottom: 18%;
+
+	}
+	.shakenum{
+		width: 320px;
+		height: 20px;
+		line-height: 20px;
+		text-align: center;
+		color: #B31729;
+		position: fixed;
+		bottom: 28%;
+		left: 50%;
+		margin-left: -160px;
+			.shakenumplus{
+				color: #fff;
+			}
+		}
+	//底部及三个按钮的样式
+	.shakebt{
+		height:18%;
+		width: 100%;
+		background: url('../assets/images/shakebottom.jpg') no-repeat;
+		background-size: 100% 100%;
+		position: fixed;
+		bottom: 0;
+		.mycenter{
+			width: 48%;
+			height: 32px;
+			line-height: 32px;
+			margin-right: 2%;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			text-align: center;
+			background: rgba(0, 0, 0, 0.5);
+			color: #fff;
+		}
+		.goshoping{
+			width: 48%;
+			height: 32px;
+			line-height: 32px;
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			text-align: center;
+			background: rgba(0, 0, 0, 0.5);
+			color: #fff;
+		}
+		.activerule{
+			width: 100px;
+			height: 32px;
+			line-height: 32px;
+			position: absolute;
+			bottom: 42%;
+			left:50%;
+			margin-left: -50px;
+			text-align: center;
+			background: #BD6300;
+			color:#fff;
+			border-radius: 20px;
+		}
+	}
+	//活动规则弹出框样式
+	.activerulecontent{
+		width: 90%;
+		// height: 52%;
+		position: fixed;
+		bottom: 20%;
+		left: 50%;
+		margin-left: -45%;
+		background: rgba(0, 0, 0, 0.8);
+		border-radius: 6px;
+		padding:4px 0 10px 18px;
+		color: #fff;
+		span{
+			display:block;
+			padding: 4px 0;
+		}
+		//黄色字体的颜色
+		.activeruletitle{
+			color:#FFBD1E;
+			margin-top: 8px;
+		}
+		//关闭按钮的样式
+		em{
+			position: absolute;
+			top:10px;
+			right:10px;
+		}
+	}
+	//很遗憾
+	.activepity{
+		width: 80%;
+		// height: 44%;
+		position: fixed;
+		bottom: 21%;
+		left: 50%;
+		margin-left: -40%;
+		background: rgba(0, 0, 0, 0.8);
+		border-radius: 6px;
+		padding-left: 10px;
+		color: #fff;
+		text-align: center;
+		padding: 22px 20px;
+		span{
+			display:block;
+			font-size: 80px;
+			margin-top: 10px;
+		}
+		.margintop30{
+			margin-top: 30px;
+		}
+		.activepitytitle{
+			color:#FFBD1E;
+			font-size: 16px;
+		}
+		//再摇一次或者随便逛逛
+		.shakeagine{
+			color:#fff;
+			background: #B31729;
+			text-align: center;
+			line-height: 36px;
+			margin: 10px 0px;
+			border-radius: 4px;
+		}
+		em{
+			position: absolute;
+			top:10px;
+			right:10px;
+		}
+	}
+	// 50积分界面
+	.activeintegral{
+		width: 80%;
+		// height: 38%;
+		position: fixed;
+		bottom: 21%;
+		left: 50%;
+		margin-left: -40%;
+		background: rgba(0, 0, 0, 0.8);
+		border-radius: 6px;
+		padding-left: 10px;
+		color: #fff;
+		text-align: center;
+		padding: 22px 20px;
+		.integrals{
+			color:#FFBD1E;
+			margin-bottom: 30px;
+			margin-top:40px;
+			.titlesz50{
+				font-size: 50px;
+			}
+		}
+		span{
+			display:block;
+			font-size: 20px;
+			margin-top: 10px;
+		}
+		em{
+			position: absolute;
+			top:10px;
+			right:10px;
+		}
+		.entercenter{
+			display: block;
+			color:#fff !important;
+			background: #B31729;
+			text-align: center;
+			line-height: 38px;
+			margin: 10px 0px;
+			border-radius: 4px;
+		}
+		.freepostage{
+			background: #FFBD1D;
+			margin:16px 0;
+			padding:6px 0;
+			.freepostagetitle{
+				color:#B31729;
+				font-size: 24px;
+			}
+			.freepostagetime{
+				color:#000;
+				font-size: 14px;
+			}
+		}
+		//100元优惠券
+		.onehundred{
+			background: #FFBD1D;
+			margin:16px 0;
+			padding:6px 0;
+			.money{
+				float: left;
+				width: 36%;
+				height: 30px;
+				line-height: 30px;
+				font-size: 20px;
+				background: #ED970E;
+				i{
+					font-size: 32px;
+				}
+			}
+			.onehundredtitle{
+				color:#B31729;
+				font-size: 24px;
+			}
+			.onehundredtime{
+				color:#000;
+				font-size: 14px;
+			}
+		}
+	}
+	// 推荐商品css
+	.sopity{
+		width: 84%;
+		// height: 84%;
+		position: fixed;
+		bottom: 8%;
+		left: 50%;
+		margin-left: -42%;
+		background: rgba(0, 0, 0, 0.8);
+		border-radius: 6px;
+		padding-left: 10px;
+		color: #fff;
+		text-align: center;
+		padding: 14px 20px;
+		.yellowcolor{
+			color:#FFBD1E
+		}
+		.vieworder{
+			color:#B31729;
+			background: #fff;
+			text-align: center;
+			line-height: 36px;
+			margin: 10px 0px;
+			border-radius: 8px;
+		}
+		.recommend{
+			// 网速慢可以用这个样式
+			// width:229px;
+			// height: 320px;
+			// 网速快用这个
+			width:100%;
+			height: auto;
+			margin:4px auto 0;
+			img{
+				width:100%;
+				height: 100%;
+			}
+		}
+		.shakeagainten{
+			color:#fff;
+			background: #B31729;
+			text-align: center;
+			line-height: 36px;
+			margin: 10px 0px;
+			border-radius: 8px;
+		}
+		span{
+			display:block;
+			font-size: 16px;
+			margin-top: 10px;
+		}
+		em{
+			position: absolute;
+			top:10px;
+			right:10px;
+		}
+	}
+}

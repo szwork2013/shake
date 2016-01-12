@@ -1,0 +1,101 @@
+<div class="shakecenter">
+	<div class="shaketitle">
+		此活动和奖品由
+		<p>mixblu品牌</p>
+		发起提供
+	</div>
+	<div class="shakebg"></div>
+	<div class="shakenum">
+		今天还能摇&nbsp;
+		<span class="shakenumplus">{{hasshaketotals}}</span>
+		&nbsp;次
+	</div>
+	<div class="shakebt">
+
+		<a class="mycenter nounderline" href="{{ykmycenterurl}}" style="color:#fff !important;">个人中心</a>
+		<a class="goshoping"  href="#/productList/////time_desc/">逛逛商铺</a>
+
+		<div class="activerule" ng-click="showactiveBtn()">活动规则</div>
+	</div>
+	<audio src="assets/shake.mp3" id="showAudio" preload="auto"></audio>
+	<!-- 活动规则 -->
+	<div class="activerulecontent" ng-if="showactive">
+		<!-- <div ng-bind-html="relustxt"></div> -->
+		<span class="activeruletitle">活动时间：</span>
+		<span>{{active_data.startTime}}~{{active_data.endTime}}</span>
+		<span class="activeruletitle">奖项说明：</span>
+		<span ng-repeat="award in award_datas">{{award.PrizeName}}：{{award.Description}}</span>
+		<!-- <span>一等奖：Apple Watch</span>
+		<span>二等奖：T恤</span>
+		<span>三等奖：购物袋</span>
+		<span>四等奖：10元无门槛优惠券</span> -->
+		<span class="activeruletitle">活动说明：</span>
+		<span>{{active_data.content}}</span>
+
+		<em class="iconfont icon-guanbi font28" ng-click="closeactiveBtn()"></em>
+	</div>
+	<!-- 抽奖未中奖界面 -->
+	<div class="activepity" ng-if="shownoresult">
+		<div ng-if="nowinning">
+			<span class="iconfont icon-henyihan margintop30"></span>
+			<span class="activepitytitle margintop30" style="margin-bottom:20px;">真遗憾！离大奖就一步之遥了， 换个姿势再摇一次。</span>
+			<span class="shakeagine activepitytitle" ng-click="closenoresultBtn()">再摇一次</span>
+			<em class="iconfont icon-guanbi font28" ng-click="closenoresultBtn()"></em>
+		</div>
+		<div ng-if="hasnopoints">
+			<span class="iconfont icon-henyihan margintop30"></span>
+			<span class="activepitytitle margintop30">真遗憾！</span>
+			<span class="activepitytitle">您的积分不足 !</span>
+			<span class="activepitytitle">请明天再来。</span>
+			<!-- <a class="shakeagine activepitytitle" href="#/productList/////time_desc/">随便逛逛</a> -->
+			<em class="iconfont icon-guanbi font28" ng-click="closenopointsBtn()"></em>
+		</div>
+	</div>
+	<!-- 优惠卷中奖界面 -->
+	<div class="activeintegral" ng-if="showintegral">
+		<span>恭喜你中奖了！</span>
+		<!-- 免邮劵 -->
+		<div class="freepostage" ng-if="hasnopostage">
+			<span class="freepostagetitle">{{noPostage.cardcoupon_name}}</span>
+			<span class="freepostagetime">有效期：{{noPostage.cardcoupon_start}}至{{noPostage.cardcoupon_end}}</span>
+		</div>
+		<!-- 100元券 -->
+		<div class="onehundred" ng-if="hascoupons">
+			<!-- <span class="money">￥<i>{{price}}</i></span> -->
+			<span class="onehundredtitle">{{couponName.cardcoupon_name}}</span>
+			<span class="onehundredtime">有效期：{{couponName.cardcoupon_start}}至{{couponName.cardcoupon_end}}</span>
+		</div>
+		<a href="{{ykmycenterurl}}" class="entercenter">进入个人中心查看</a>
+		<!-- <span class="entercenter">进入个人中心查看</span> -->
+		<em class="iconfont icon-guanbi font28" ng-click="closeintegralBtn()"></em>
+	</div>
+	<!-- 积分中奖界面 -->
+	<div class="activeintegral" ng-if="showpoints">
+		<span>恭喜你中奖了！</span>
+		<span class="integrals"><i class="titlesz50">{{Points}}</i>积分</span>
+		<a href="{{ykmycenterurl}}" class="entercenter">进入个人中心查看</a>
+		<!-- <span class="entercenter">进入个人中心查看</span> -->
+		<em class="iconfont icon-guanbi font28" ng-click="closepointsBtn()"></em>
+	</div>
+	<!-- 自定义中奖界面 -->
+	<div class="activeintegral" ng-if="showcustom">
+		<span>恭喜你中奖了！</span>
+		<span class="integrals"> <i class="font28">{{customName}}</i>
+		</span>
+		<a href="{{ykmycenterurl}}" class="entercenter">进入个人中心查看</a>
+		<!-- <span class="entercenter">进入个人中心查看</span> -->
+		<em class="iconfont icon-guanbi font28" ng-click="closecustomBtn()"></em>
+	</div>
+	<!-- 推荐商品 -->
+	<div class="sopity" ng-if="hasnocounts">
+		<!-- <span class="titlesz26 yellowcolor">真遗憾！</span> -->
+		<span class="yellowcolor">真遗憾！今日次数用完！<br>给您推荐一款热卖单品！</span>
+		<!-- <span>推荐给亲一款热卖单品！</span> -->
+		<div class="recommend">
+			<img src="{{mathproduct.img_url}}" alt="" ui-sref="productDetail({productId:mathproduct.product_id,sale:0})">
+		</div>
+		<!-- <span class="vieworder" ui-sref="productDetail({productId:mathproduct.product_id,sale:0})">今日推荐</span> -->
+		<span class="shakeagainten" ng-click="goshake()">{{shouldusepoints}}积分再摇1次</span>
+		<em class="iconfont icon-guanbi font28" ng-click="closenocountsBtn()"></em>
+	</div>
+</div>
