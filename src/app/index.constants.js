@@ -12,7 +12,7 @@
   if(location.href.match("localhost")||location.href.match("192.168.1")){
 
     CLIENTAPI_CONFIG={
-      uri:"http://dev1.comeoncloud.net",
+      uri:"http://dev1.gotocloud8.net",
       debug:false,
       wxdebug:false,
     }

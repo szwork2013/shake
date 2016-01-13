@@ -1,34 +1,100 @@
-<div class="container">
-
-  <div>
-    <acme-navbar creation-date="main.creationDate"></acme-navbar>
+<div class="shakecenter">
+  <div class="shaketitle">
+    此活动和奖品由
+    <p>{{shake.title}}</p>
+    发起提供
   </div>
-
-  <div class="jumbotron text-center">
-    <h1>'Allo, 'Allo!</h1>
-    <p class="lead">
-      <img src="assets/images/yeoman.png" alt="I'm Yeoman"><br>
-      Always a pleasure scaffolding your apps.
-    </p>
-    <p class="animated infinite" ng-class="main.classAnimation">
-      <button type="button" class="btn btn-lg btn-success" ng-click="main.showToastr()">Splendid Toastr</button>
-    </p>
-    <p>
-      With ♥ thanks to the contributions of<acme-malarkey extra-values="['Yeoman', 'Gulp', 'Angular']"></acme-malarkey>
-    </p>
+  <div class="shakebg"></div>
+  <div class="shakenum">
+    今天还能摇&nbsp;
+    <span class="shake numplus">{{shake.hasshaketotals}}</span>
+    &nbsp;次
   </div>
+  <div class="shakebt">
+    <a class="mycenter nounderline" href="{{shake.ykmycenterurl}}" style="color:#fff !important;">个人中心</a>
+    <a class="goshoping"  href="#/productList/////time_desc/">逛逛商铺</a>
 
-  <div class="row">
-    <div class="col-sm-6 col-md-4" ng-repeat="awesomeThing in main.awesomeThings | orderBy:'rank'">
-      <div class="thumbnail">
-        <img class="pull-right" ng-src="assets/images/{{ awesomeThing.logo }}" alt="{{ awesomeThing.title }}">
-        <div class="caption">
-          <h3>{{ awesomeThing.title }}</h3>
-          <p>{{ awesomeThing.description }}</p>
-          <p><a ng-href="{{awesomeThing.url}}">{{ awesomeThing.url }}</a></p>
-        </div>
-      </div>
+    <div class="activerule" ng-click="shake.showactive=!shake.showactive">活动规则</div>
+  </div>
+  <audio src="assets/shake.mp3" id="showAudio" preload="auto"></audio>
+  <!-- 活动规则 -->
+  <div class="activerulecontent" ng-if="shake.showactive">
+    <!-- <div ng-bind-html="relustxt"></div> -->
+    <span class="activeruletitle">活动时间：</span>
+    <span>{{shake.active_data.startTime}}~{{shake.active_data.endTime}}</span>
+    <span class="activeruletitle">奖项说明：</span>
+    <span ng-repeat="award in shake.award_datas">{{shake.award.PrizeName}}：{{shake.award.Description}}</span>
+    <!-- <span>一等奖：Apple Watch</span>
+        <span>二等奖：T恤</span>
+        <span>三等奖：购物袋</span>
+        <span>四等奖：10元无门槛优惠券</span> -->
+    <span class="activeruletitle">活动说明：</span>
+    <span>{{shake.active_data.content}}</span>
+
+    <em class="iconfont icon-guanbi font28" ng-click="shake.showactive=false;"></em>
+  </div>
+  <!-- 抽奖未中奖界面 1shake.shownoresult 2shake.nowinning -->
+  <div class="activepity" ng-if="shake.shownoresult">
+    <div ng-if="shake.nowinning">
+      <span class="iconfont icon-henyihan margintop30"></span>
+      <span class="activepitytitle margintop30" style="margin-bottom:20px;">真遗憾！离大奖就一步之遥了， 换个姿势再摇一次。</span>
+      <span class="shakeagine activepitytitle" ng-click="shake.shownoresult=false;">再摇一次</span>
+      <em class="iconfont icon-guanbi font28" ng-click="shake.shownoresult=false;"></em>
+    </div>
+    <div ng-if="shake.hasnopoints">
+      <span class="iconfont icon-henyihan margintop30"></span>
+      <span class="activepitytitle margintop30">真遗憾！</span>
+      <span class="activepitytitle">您的积分不足 !</span>
+      <span class="activepitytitle">请明天再来。</span>
+      <!-- <a class="shakeagine activepitytitle" href="#/productList/////time_desc/">随便逛逛</a> -->
+      <em class="iconfont icon-guanbi font28" ng-click="shake.closeNoPointBtn()"></em>
     </div>
   </div>
-
+  <!-- 优惠卷中奖界面 -->
+  <div class="activeintegral" ng-if="shake.showintegral">
+    <span>恭喜你中奖了！</span>
+    <!-- 免邮劵 -->
+    <div class="freepostage" ng-if="shake.hasnopostage">
+      <span class="freepostagetitle">{{shake.noPostage.cardcoupon_name}}</span>
+      <span class="freepostagetime">有效期：{{shake.noPostage.cardcoupon_start}}至{{shake.noPostage.cardcoupon_end}}</span>
+    </div>
+    <!-- 100元券 -->
+    <div class="onehundred" ng-if="shake.hascoupons">
+      <!-- <span class="money">￥<i>{{price}}</i></span> -->
+      <span class="onehundredtitle">{{shake.couponName.cardcoupon_name}}</span>
+      <span class="onehundredtime">有效期：{{shake.couponName.cardcoupon_start}}至{{shake.couponName.cardcoupon_end}}</span>
+    </div>
+    <a href="{{ykmycenterurl}}" class="entercenter">进入个人中心查看</a>
+    <!-- <span class="entercenter">进入个人中心查看</span> -->
+    <em class="iconfont icon-guanbi font28" ng-click="shake.showintegral=false;"></em>
+  </div>
+  <!-- 积分中奖界面 -->
+  <div class="activeintegral" ng-if="shake.showpoints">
+    <span>恭喜你中奖了！</span>
+    <span class="integrals"><i class="titlesz50">{{shake.Points}}</i>积分</span>
+    <a href="{{ykmycenterurl}}" class="entercenter">进入个人中心查看</a>
+    <!-- <span class="entercenter">进入个人中心查看</span> -->
+    <em class="iconfont icon-guanbi font28" ng-click="shake.showpoints=false;"></em>
+  </div>
+  <!-- 自定义中奖界面 -->
+  <div class="activeintegral" ng-if="shake.showcustom">
+    <span>恭喜你中奖了！</span>
+		<span class="integrals"> <i class="font28">{{shake.customName}}</i>
+		</span>
+    <a href="{{ykmycenterurl}}" class="entercenter">进入个人中心查看</a>
+    <!-- <span class="entercenter">进入个人中心查看</span> -->
+    <em class="iconfont icon-guanbi font28" ng-click="shake.showcustom=false;"></em>
+  </div>
+  <!-- 推荐商品 -->
+  <div class="sopity" ng-if="shake.hasnocounts">
+    <!-- <span class="titlesz26 yellowcolor">真遗憾！</span> -->
+    <span class="yellowcolor">真遗憾！今日次数用完！<br>给您推荐一款热卖单品！</span>
+    <!-- <span>推荐给亲一款热卖单品！</span> -->
+    <div class="recommend">
+      <img src="{{mathproduct.img_url}}" alt="" ui-sref="productDetail({productId:mathproduct.product_id,sale:0})">
+    </div>
+    <!-- <span class="vieworder" ui-sref="productDetail({productId:mathproduct.product_id,sale:0})">今日推荐</span> -->
+    <span class="shakeagainten" ng-click="shake.shakeUsePoint()">{{shake.shouldusepoints}}积分再摇1次</span>
+    <em class="iconfont icon-guanbi font28" ng-click="shake.hasnocounts=false;shake.useTen=false;"></em>
+  </div>
 </div>
