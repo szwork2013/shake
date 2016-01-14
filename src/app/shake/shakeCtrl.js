@@ -7,19 +7,19 @@
 
   /** @ngInject */
   /* jshint validthis: true */
-  function shakeCtrl($http,$scope,$stateParams,$timeout,nAPI,wLoading) {
+  function shakeCtrl($stateParams,$timeout,nAPI,wLoading,wxAPI) {
     /* jshint validthis: true */
     var vm=this;
-    vm.title=$stateParams.brand;  //这里可以传进来是哪里的摇一摇
+    vm.title=decodeURIComponent($stateParams.brand);  //这里可以传进来是哪里的摇一摇
     vm.activeID=$stateParams.activityId; // 活动的ID
     //vm.activeID='419338';
     vm.isable=1;
     vm.useTen=false;
     vm.award_datas=[];
     vm.active_data='';
-    vm.use_points=''; // 获取超过次数后每次需要多少积分
+  //  vm.use_points=''; // 获取超过次数后每次需要多少积分
     vm.hasshaketotals='';//剩余的摇奖次数
-    vm.shouldusepoints='';
+    vm.shouldusepoints='';  // 获取超过次数后每次需要多少积分
     vm.customName='';
     vm.showcustom=false; //自定义中奖界面开关
     vm.Points='';
@@ -34,6 +34,8 @@
     vm.hasnopoints=false; //没有抽中奖没有积分可以抽奖页面开关
     vm.nowinning=false;  //没有抽中奖可以继续抽页面开关
     vm.hasnocounts=false; //推荐商品页面开关
+
+    vm.isMutiShake=''; //是否可以多次中奖,当为1时表示不能多次中奖
 
     /*手机摇动的时候参数*/
     var SHAKE_THRESHOLD = 2000;
@@ -62,8 +64,8 @@
     //  location.reload();
     //  $rootScope.iscomeshakessss = undefined;
     //}
-
     var audioID=document.getElementById("showAudio");
+
     isLogin();
     //判断登录
     function isLogin(){
@@ -118,7 +120,7 @@
     function getLotteryInfo(){
       nAPI.getLotteryInfo(vm.activeID)
         .then(function(data){
-          console.log(data);
+          console.log('活动信息',data);
           // 此处为判断是否有活动
           if(data.Status!=0){
             wLoading.show("未找到抽奖活动，请与管理员联系");
@@ -132,14 +134,21 @@
             vm.active_data.startTime=data.Result.startTime.substring(0,data.Result.startTime.length-3).replace(/\//g,'-');
             vm.active_data.endTime=data.Result.endTime.substring(0,data.Result.endTime.length-3).replace(/\//g,'-');
             // 获取超过次数后每次需要多少积分
-            vm.use_points=data.Result.usePoints
+          //  vm.use_points=data.Result.usePoints;
             // 剩余的摇奖次数
             if((data.Result.luckRest)>0){
               vm.hasshaketotals = data.Result.luckRest;
             }else{
               vm.hasshaketotals = 0;
             }
-            vm.shouldusepoints = data.Result.usePoints;
+            vm.shouldusepoints = data.Result.usePoints; // 获取超过次数后每次需要多少积分
+            wxAPI.share({
+              title: data.Result.name,
+              desc: data.Result.shareDesc,
+              imgUrl: data.Result.shareImg,
+              link: window.location.href
+            });
+
           }
           // 由于后台转码问题，需将内联样式中文分号换为英文分号
           // $scope.relustxt=$sce.trustAsHtml(data.Result.content.replace(/；/g, ";"));
@@ -178,17 +187,64 @@
       //});
     }
     // 获取抽奖信息(中奖)
-    function getAwardInfo(){
+    function getAwardInfo(dataobj){
       nAPI.getLotteryInfo(vm.activeID)
-        .then(function(){
+        .then(function(data){
+          wLoading.hide();
+          console.log('中奖',data);
           // 剩余的摇奖次数
           if((data.Result.luckRest)>0){
             vm.hasshaketotals = data.Result.luckRest;
+            /*ls改 默认0不允许中多次，1为允许中多次 */
+            if(data.Result.winLimitType==0){
+              /*ls 改 如果限制为不能多次中奖，再次抽奖dataobj.isAward值为true，10029说明已经中过奖*/
+              if(dataobj.errorCode==10029){
+                //alert('您已中奖');
+                vm.shownoresult=true;
+                vm.hasnopoints=false;
+                vm.nowinning=true;
+                return;
+              }
+              /*ls改 end*/
+            }
+            /*ls改 end */
           }else{
             vm.hasshaketotals = 0;
+            /*ls改 默认0不允许中多次，1为允许中多次 */
+            if(data.Result.winLimitType==0){
+              if(dataobj.errorCode==10029){
+                vm.isMutiShake=1;
+                vm.hasnocounts=true;
+                return;
+              }
+            }
+            /*ls改 end */
           }
+
+          // 0是自定义、1是积分、2是优惠卷
+          if(dataobj.awardsType == 0){
+            vm.customName=dataobj.awardName;
+            vm.showcustom=true;
+          }else if (dataobj.awardsType == 1) {
+            vm.Points=dataobj.value;
+            vm.showpoints=true;
+          }else if(dataobj.awardsType == 2) {
+            vm.showintegral = true;
+            // 免邮费和满多少减多少暂时分开
+            if(dataobj.cardcoupon_type=='MallCardCoupon_FreeFreight'){
+              vm.hasnopostage=true;
+              vm.hascoupons=false;
+              vm.noPostage=dataobj;
+            }else{
+              vm.hasnopostage=false;
+              vm.hascoupons=true;
+              vm.couponName=dataobj;
+            }
+          }
+
+
         })
-        .catch(function(){
+        .catch(function(data){
           console.log(data)
         });
       //$http({
@@ -209,12 +265,16 @@
     function getPrizeInfo(){
       nAPI.getLotteryInfo(vm.activeID)
         .then(function(data){
+          console.log('未中奖',data);
           // 剩余的摇奖次数
           if((data.Result.luckRest)>0){
             vm.hasshaketotals = data.Result.luckRest;
           }else{
             vm.hasshaketotals = 0;
           }
+          vm.shownoresult=true;
+          vm.hasnopoints=false;
+          vm.nowinning=true;
         })
         .catch(function(data){
           console.log(data);
@@ -233,6 +293,7 @@
       //  console.log(data)
       //});
     }
+  //  KSCJ();
     //开始抽奖
     function KSCJ(){
       nAPI.scratchAward(vm.activeID)
@@ -242,42 +303,46 @@
             vm.isable=1;
             vm.useTen=false;
           },2000);
+          console.log('开始抽奖',data);
           //隐藏抽奖等待
           //$ionicLoading.hide();
           // 中奖
           if (data.isAward == true) {
             // 获取抽奖信息
-            vm.getAwardInfo();
-            // 0是自定义、1是积分、2是优惠卷
-            if(data.awardsType == 0){
-              vm.customName=data.awardName;
-              vm.showcustom=true;
-            }else if (data.awardsType == 1) {
-              vm.Points=data.value;
-              vm.showpoints=true;
-            }else if(data.awardsType == 2) {
-              vm.showintegral = true;
-              // 免邮费和满多少减多少暂时分开
-              if(data.cardcoupon_type=='MallCardCoupon_FreeFreight'){
-                vm.hasnopostage=true;
-                vm.hascoupons=false;
-                vm.noPostage=data;
-              }else{
-                vm.hasnopostage=false;
-                vm.hascoupons=true;
-                vm.couponName=data;
-              }
-            }
+            vm.getAwardInfo(data);
+
+           // alert(data.awardsType);
+           // // 0是自定义、1是积分、2是优惠卷
+           // if(data.awardsType == 0){
+           //   vm.customName=data.awardName;
+           //   vm.showcustom=true;
+           // }else if (data.awardsType == 1) {
+           //   vm.Points=data.value;
+           //   vm.showpoints=true;
+           // }else if(data.awardsType == 2) {
+           //   vm.showintegral = true;
+           //   // 免邮费和满多少减多少暂时分开
+           //   if(data.cardcoupon_type=='MallCardCoupon_FreeFreight'){
+           //     vm.hasnopostage=true;
+           //     vm.hascoupons=false;
+           //     vm.noPostage=data;
+           //   }else{
+           //     vm.hasnopostage=false;
+           //     vm.hascoupons=true;
+           //     vm.couponName=data;
+           //   }
+           // }
           }
           // 未中奖
           else {
+            wLoading.hide();
             // 活动状态正常
             if(data.errorCode==0){
               // 获取抽奖信息
               vm.getPrizeInfo();
-              vm.shownoresult=true;
-              vm.hasnopoints=false;
-              vm.nowinning=true;
+              //vm.shownoresult=true;
+              //vm.hasnopoints=false;
+              //vm.nowinning=true;
             }
             // 活动未开启
             else if(data.errorCode==10025){
@@ -430,8 +495,9 @@
         console.log(['data.totalscore',data.totalscore])
         // $scope.totalscore = data.totalscore;
         // 当可用积分大于每次抽奖所需的积分时
-        if(data.totalscore>=vm.use_points){
+        if(data.totalscore>=vm.shouldusepoints){
           startShake();
+          wLoading.show('抽奖中,请稍后...');
           //wLoading.show("抽奖中,请稍后...");
           //$timeout(function () {
           //  wLoading.hide()
@@ -486,6 +552,7 @@
                 // 当有摇奖次数的时候加载正常的摇奖步骤
                 if((data.Result.luckRest)>0){
                   startShake();
+                  wLoading.show('抽奖中,请稍后...');
                   //wLoading.show("抽奖中,请稍后...");
                   //$timeout(function () {
                   //  wLoading.hide()
