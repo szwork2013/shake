@@ -81,6 +81,19 @@
       color:#fff;
       border-radius: 20px;
     }
+    .row-reset{
+      width: 100%;
+      position: fixed;
+      bottom: 0px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      margin-left: 0px;
+      margin-right: 0px;
+      .colreset{
+        border-right: 1px solid #fff;
+      }
+    }
   }
   //活动规则弹出框样式
   .activerulecontent{

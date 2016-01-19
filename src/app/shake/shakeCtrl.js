@@ -36,6 +36,7 @@
     vm.hasnocounts=false; //推荐商品页面开关
 
     vm.isMutiShake=''; //是否可以多次中奖,当为1时表示不能多次中奖
+    vm.buttons=[];//底部导航栏
 
     /*手机摇动的时候参数*/
     var SHAKE_THRESHOLD = 2000;
@@ -57,6 +58,8 @@
     vm.closeNoPointBtn=closeNoPointBtn;//关闭积分用完的界面
     vm.shakeUsePoint=shakeUsePoint;//用积分抽奖
   //  vm.getAward=getAward;//测试用，后面删
+    vm.getBottomNav=getBottomNav;//获取底部导航按钮
+    vm.goToLink=goToLink;//底部导航点击方法
 
     //if ($rootScope.iscomeshakessss == undefined) {
     //  $rootScope.iscomeshakessss = 0;
@@ -131,6 +134,7 @@
           }else{
             vm.award_datas=data.Result.awards;
             vm.active_data=data.Result;
+            getBottomNav();
             vm.active_data.startTime=data.Result.startTime.substring(0,data.Result.startTime.length-3).replace(/\//g,'-');
             vm.active_data.endTime=data.Result.endTime.substring(0,data.Result.endTime.length-3).replace(/\//g,'-');
             // 获取超过次数后每次需要多少积分
@@ -706,6 +710,20 @@
       //$scope.closepointsBtn=function(){
       //  vm.showpoints=false;
       //}
+    }
+    //获取底部导航
+    function getBottomNav(){
+      nAPI.getNavList(vm.active_data.toolbarbutton)
+        .then(function(data){
+          vm.buttons=data;
+        })
+        .catch(function(data){
+
+        });
+    }
+    //点击底部导航跳转
+    function goToLink(button){
+      window.location.href=button.navigation_link;
     }
 
     //分界线

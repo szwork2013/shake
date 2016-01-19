@@ -11,8 +11,13 @@
     &nbsp;次
   </div>
   <div class="shakebt">
-    <a class="mycenter nounderline" href="{{shake.ykmycenterurl}}" style="color:#fff !important;">个人中心</a>
-    <a class="goshoping"  href="#/productList/////time_desc/">逛逛商铺</a>
+    <!--<a class="mycenter nounderline" href="{{shake.ykmycenterurl}}" style="color:#fff !important;">个人中心</a>-->
+    <!--<a class="goshoping"  href="#/productList/////time_desc/">逛逛商铺</a>-->
+    <div class="row row-reset">
+      <div class="col" ng-class="{colreset:$index!=shake.buttons.length-1}" ng-repeat="button in shake.buttons" ng-click="shake.goToLink(button)">
+        {{button.navigation_name}}
+      </div>
+    </div>
 
     <div class="activerule" ng-click="shake.showactive=!shake.showactive">活动规则</div>
   </div>
