@@ -9,7 +9,7 @@
   function routerConfig($stateProvider, $urlRouterProvider) {
     $stateProvider
       .state('shake', {
-        url: '/shake/:activityId/:brand',
+        url: '/shake/:activityId',
         templateUrl: 'app/shake/shake.html',
         controller: 'shakeCtrl',
         controllerAs: 'shake'

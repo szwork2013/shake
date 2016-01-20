@@ -1,4 +1,4 @@
-.shakecenter{
+.newshakecenter{
   position: relative;
   .titlesz26{
     font-size: 26px !important;
@@ -39,7 +39,9 @@
   }
   //底部及三个按钮的样式
   .shakebt{
-    height:18%;
+//    height:18%;
+
+    height:24%;
     width: 100%;
     background: url('../assets/images/shakebottom.jpg') no-repeat;
     background-size: 100% 100%;
@@ -73,7 +75,7 @@
       height: 32px;
       line-height: 32px;
       position: absolute;
-      bottom: 42%;
+      bottom: 50%;
       left:50%;
       margin-left: -50px;
       text-align: center;

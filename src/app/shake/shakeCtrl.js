@@ -7,10 +7,11 @@
 
   /** @ngInject */
   /* jshint validthis: true */
-  function shakeCtrl($stateParams,$timeout,nAPI,wLoading,wxAPI) {
+  function shakeCtrl($stateParams,$timeout,nAPI,wLoading) {
     /* jshint validthis: true */
     var vm=this;
-    vm.title=decodeURIComponent($stateParams.brand);  //这里可以传进来是哪里的摇一摇
+  //  vm.title=decodeURIComponent($stateParams.brand);  //这里可以传进来是哪里的摇一摇
+    vm.titleNm='';
     vm.activeID=$stateParams.activityId; // 活动的ID
     //vm.activeID='419338';
     vm.isable=1;
@@ -29,6 +30,7 @@
     vm.hascoupons=false;  //100元券页面开关
     vm.noPostage=[];
     vm.couponName=[];
+    vm.isStarted=0;  //是否到了抽奖或者过了抽奖时间  0表示正常 1表示还没到抽奖时间，2表示过了抽奖时间
 
     vm.shownoresult=false; //关闭未中奖界面
     vm.hasnopoints=false; //没有抽中奖没有积分可以抽奖页面开关
@@ -68,6 +70,7 @@
     //  $rootScope.iscomeshakessss = undefined;
     //}
     var audioID=document.getElementById("showAudio");
+    document.title='摇一摇';
 
     isLogin();
     //判断登录
@@ -134,6 +137,33 @@
           }else{
             vm.award_datas=data.Result.awards;
             vm.active_data=data.Result;
+            vm.titleNm=data.Result.websiteownername;
+            var today=(new Date()).getTime();
+            var startTime=(new Date(data.Result.startTime)).getTime();
+            var endTime=(new Date(data.Result.endTime)).getTime();
+            if(today>startTime&&today<endTime)
+            {
+              //true表示在正常时间内，可以正常抽奖
+              vm.isStarted=0;
+            }
+            else{
+              //开始时间是否到了 1表示还没到时间
+              if(today<startTime){
+                vm.isStarted=1;
+                wLoading.show("活动还未开启");
+                $timeout(function () {
+                  wLoading.hide();
+                }, 2000);
+              }
+              //是否过了结束时间 2表示过了结束时间
+              else if(today>endTime){
+                vm.isStarted=2;
+                wLoading.show("活动已结束");
+                $timeout(function () {
+                  wLoading.hide();
+                }, 2000);
+              }
+            }
             getBottomNav();
             vm.active_data.startTime=data.Result.startTime.substring(0,data.Result.startTime.length-3).replace(/\//g,'-');
             vm.active_data.endTime=data.Result.endTime.substring(0,data.Result.endTime.length-3).replace(/\//g,'-');
@@ -146,13 +176,20 @@
               vm.hasshaketotals = 0;
             }
             vm.shouldusepoints = data.Result.usePoints; // 获取超过次数后每次需要多少积分
-            wxAPI.share({
-              title: data.Result.name,
-              desc: data.Result.shareDesc,
-              imgUrl: data.Result.shareImg,
-              link: window.location.href
+            //wxAPI.share({
+            //  title: data.Result.name,
+            //  desc: data.Result.shareDesc,
+            //  imgUrl: data.Result.shareImg,
+            //  link: window.location.href
+            //});
+            wx.ready(function () {
+              wxapi.wxshare({
+                title: data.Result.name,
+                desc: data.Result.shareDesc,
+                link: window.location.href,
+                imgUrl:data.Result.shareImg
+              }, '')
             });
-
           }
           // 由于后台转码问题，需将内联样式中文分号换为英文分号
           // $scope.relustxt=$sce.trustAsHtml(data.Result.content.replace(/；/g, ";"));
@@ -500,8 +537,21 @@
         // $scope.totalscore = data.totalscore;
         // 当可用积分大于每次抽奖所需的积分时
         if(data.totalscore>=vm.shouldusepoints){
-          startShake();
-          wLoading.show('抽奖中,请稍后...');
+          if(vm.isStarted==0){
+            startShake();
+            wLoading.show('抽奖中,请稍后...');
+          }else if(vm.isStarted==1){
+            wLoading.show("活动还未开启");
+            $timeout(function () {
+              wLoading.hide();
+            }, 2000);
+          }
+          else if(vm.isStarted==2){
+            wLoading.show("活动还未开启");
+            $timeout(function () {
+              wLoading.hide();
+            }, 2000);
+          }
           //wLoading.show("抽奖中,请稍后...");
           //$timeout(function () {
           //  wLoading.hide()
@@ -537,103 +587,118 @@
        if (speed > SHAKE_THRESHOLD && vm.isable==1 && window.location.href.indexOf('shake')>=0) {
        // if ( vm.isable==1 && window.location.href.indexOf('shake')>=0) {
          // alert('摇一摇');
-          vm.isable=0;
-          // 摇动手机即播放音乐
-          audioID.play();
-          // 请求活动详情的参数
-          nAPI.getLotteryInfo(vm.activeID)
-            .then(function(data){
-              console.log(data)
-              // 此处为判断是否有活动
-              if(data.Status!=0){
-                wLoading.show("未找到抽奖活动，请与管理员联系");
-                $timeout(function () {
-                  wLoading.hide()
-                }, 2000);
-              //  alert('未找到抽奖活动，请与管理员联系');
-              }else{
-                // 剩余的摇奖次数
-                // 当有摇奖次数的时候加载正常的摇奖步骤
-                if((data.Result.luckRest)>0){
-                  startShake();
-                  wLoading.show('抽奖中,请稍后...');
-                  //wLoading.show("抽奖中,请稍后...");
-                  //$timeout(function () {
-                  //  wLoading.hide()
-                  //}, 500);
-                  //$ionicLoading.show({
-                  //  template: "抽奖中,请稍后..."
-                  //});
-                }
-                // 当摇奖次数超过允许的最大摇奖次数时
-                // 1、积分够
-                // 2、积分不够
-                else if((data.Result.luckRest)<=0){
-                  // 设置总的摇奖次数为0
-                  vm.hasshaketotals=0;
-                  // 再判断用户是否还需要再用积分来摇一摇
-                  if(vm.useTen==true){
-                    //获取可使用积分
-                    getCurrUserInfo();
-                  }else {
-                    vm.hasnocounts=true;
-                  //  getProductList();
-                    setTimeout(function() {
-                      vm.isable=1;
-                    },2000)
-                  }
-                }
+         if(vm.isStarted==0){
+           vm.isable=0;
+           // 摇动手机即播放音乐
+           audioID.play();
+           // 请求活动详情的参数
+           nAPI.getLotteryInfo(vm.activeID)
+             .then(function(data){
+               console.log(data)
+               // 此处为判断是否有活动
+               if(data.Status!=0){
+                 wLoading.show("未找到抽奖活动，请与管理员联系");
+                 $timeout(function () {
+                   wLoading.hide()
+                 }, 2000);
+                 //  alert('未找到抽奖活动，请与管理员联系');
+               }else{
+                 // 剩余的摇奖次数
+                 // 当有摇奖次数的时候加载正常的摇奖步骤
+                 if((data.Result.luckRest)>0){
+                   startShake();
+                   wLoading.show('抽奖中,请稍后...');
+                   //wLoading.show("抽奖中,请稍后...");
+                   //$timeout(function () {
+                   //  wLoading.hide()
+                   //}, 500);
+                   //$ionicLoading.show({
+                   //  template: "抽奖中,请稍后..."
+                   //});
+                 }
+                 // 当摇奖次数超过允许的最大摇奖次数时
+                 // 1、积分够
+                 // 2、积分不够
+                 else if((data.Result.luckRest)<=0){
+                   // 设置总的摇奖次数为0
+                   vm.hasshaketotals=0;
+                   // 再判断用户是否还需要再用积分来摇一摇
+                   if(vm.useTen==true){
+                     //获取可使用积分
+                     getCurrUserInfo();
+                   }else {
+                     vm.hasnocounts=true;
+                     //  getProductList();
+                     setTimeout(function() {
+                       vm.isable=1;
+                     },2000)
+                   }
+                 }
 
-              }
-              // 由于后台转码问题，需将内联样式中文分号换为英文分号
-              // $scope.relustxt=$sce.trustAsHtml(data.Result.content.replace(/；/g, ";"));
-            })
-            .catch(function(data){
-              console.log(data);
-            });
+               }
+               // 由于后台转码问题，需将内联样式中文分号换为英文分号
+               // $scope.relustxt=$sce.trustAsHtml(data.Result.content.replace(/；/g, ";"));
+             })
+             .catch(function(data){
+               console.log(data);
+             });
 
-          //$http({
-          //  method: "GET",
-          //  url: $rootScope.mainsiteurl+"/serv/AWARDAPI.ashx?action=getLottery&id="+vm.activeID
-          //}).success(function(data, status) {
-          //  console.log(data)
-          //  // 此处为判断是否有活动
-          //  if(data.Status!=0){
-          //    popUp('未找到抽奖活动，请与管理员联系');
-          //  }else{
-          //    // 剩余的摇奖次数
-          //    // 当有摇奖次数的时候加载正常的摇奖步骤
-          //    if((data.Result.luckRest)>0){
-          //      startShake();
-          //      $ionicLoading.show({
-          //        template: "抽奖中,请稍后..."
-          //      });
-          //    }
-          //    // 当摇奖次数超过允许的最大摇奖次数时
-          //    // 1、积分够
-          //    // 2、积分不够
-          //    else if((data.Result.luckRest)<=0){
-          //      // 设置总的摇奖次数为0
-          //      vm.hasshaketotals=0;
-          //      // 再判断用户是否还需要再用积分来摇一摇
-          //      if(vm.useTen==true){
-          //        //获取可使用积分
-          //        getCurrUserInfo();
-          //      }else {
-          //        vm.hasnocounts=true;
-          //        getProductList();
-          //        setTimeout(function() {
-          //          vm.isable=1;
-          //        },2000)
-          //      }
-          //    }
-          //
-          //  }
-          //  // 由于后台转码问题，需将内联样式中文分号换为英文分号
-          //  // $scope.relustxt=$sce.trustAsHtml(data.Result.content.replace(/；/g, ";"));
-          //}).error(function(data, status) {
-          //  console.log(data)
-          //});
+           //$http({
+           //  method: "GET",
+           //  url: $rootScope.mainsiteurl+"/serv/AWARDAPI.ashx?action=getLottery&id="+vm.activeID
+           //}).success(function(data, status) {
+           //  console.log(data)
+           //  // 此处为判断是否有活动
+           //  if(data.Status!=0){
+           //    popUp('未找到抽奖活动，请与管理员联系');
+           //  }else{
+           //    // 剩余的摇奖次数
+           //    // 当有摇奖次数的时候加载正常的摇奖步骤
+           //    if((data.Result.luckRest)>0){
+           //      startShake();
+           //      $ionicLoading.show({
+           //        template: "抽奖中,请稍后..."
+           //      });
+           //    }
+           //    // 当摇奖次数超过允许的最大摇奖次数时
+           //    // 1、积分够
+           //    // 2、积分不够
+           //    else if((data.Result.luckRest)<=0){
+           //      // 设置总的摇奖次数为0
+           //      vm.hasshaketotals=0;
+           //      // 再判断用户是否还需要再用积分来摇一摇
+           //      if(vm.useTen==true){
+           //        //获取可使用积分
+           //        getCurrUserInfo();
+           //      }else {
+           //        vm.hasnocounts=true;
+           //        getProductList();
+           //        setTimeout(function() {
+           //          vm.isable=1;
+           //        },2000)
+           //      }
+           //    }
+           //
+           //  }
+           //  // 由于后台转码问题，需将内联样式中文分号换为英文分号
+           //  // $scope.relustxt=$sce.trustAsHtml(data.Result.content.replace(/；/g, ";"));
+           //}).error(function(data, status) {
+           //  console.log(data)
+           //});
+         }
+         else if(vm.isStarted==1){
+           wLoading.show("活动还未开启");
+           $timeout(function () {
+             wLoading.hide();
+           }, 2000);
+         }
+         else if(vm.isStarted==2){
+           wLoading.show("活动已结束");
+           $timeout(function () {
+             wLoading.hide();
+           }, 2000);
+         }
+
         }
         last_x = x;
         last_y = y;

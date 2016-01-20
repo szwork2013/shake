@@ -1,7 +1,7 @@
-<div class="shakecenter">
+<div class="newshakecenter">
   <div class="shaketitle">
     此活动和奖品由
-    <p>{{shake.title}}</p>
+    <p>{{shake.titleNm}}</p>
     发起提供
   </div>
   <div class="shakebg"></div>
@@ -28,13 +28,13 @@
     <span class="activeruletitle">活动时间：</span>
     <span>{{shake.active_data.startTime}}~{{shake.active_data.endTime}}</span>
     <span class="activeruletitle">奖项说明：</span>
-    <span ng-repeat="award in shake.award_datas">{{shake.award.PrizeName}}：{{shake.award.Description}}</span>
+    <span ng-repeat="award in shake.award_datas">{{award.PrizeName}}：{{award.Description}}</span>
     <!-- <span>一等奖：Apple Watch</span>
         <span>二等奖：T恤</span>
         <span>三等奖：购物袋</span>
         <span>四等奖：10元无门槛优惠券</span> -->
     <span class="activeruletitle">活动说明：</span>
-    <span>{{shake.active_data.content}}</span>
+    <span ng-bind-html="shake.active_data.content"></span>
 
     <em class="iconfont icon-guanbi font28" ng-click="shake.showactive=false;"></em>
   </div>
@@ -69,7 +69,7 @@
       <span class="onehundredtitle">{{shake.couponName.cardcoupon_name}}</span>
       <span class="onehundredtime">有效期：{{shake.couponName.cardcoupon_start}}至{{shake.couponName.cardcoupon_end}}</span>
     </div>
-    <a href="{{ykmycenterurl}}" class="entercenter">进入个人中心查看</a>
+    <a href="/customize/shop/?v=1.0#/infoCenter" class="entercenter">进入个人中心查看</a>
     <!-- <span class="entercenter">进入个人中心查看</span> -->
     <em class="iconfont icon-guanbi font28" ng-click="shake.showintegral=false;"></em>
   </div>
@@ -77,7 +77,7 @@
   <div class="activeintegral" ng-if="shake.showpoints">
     <span>恭喜你中奖了！</span>
     <span class="integrals"><i class="titlesz50">{{shake.Points}}</i>积分</span>
-    <a href="{{ykmycenterurl}}" class="entercenter">进入个人中心查看</a>
+    <a href="/customize/shop/?v=1.0#/infoCenter" class="entercenter">进入个人中心查看</a>
     <!-- <span class="entercenter">进入个人中心查看</span> -->
     <em class="iconfont icon-guanbi font28" ng-click="shake.showpoints=false;"></em>
   </div>
@@ -86,7 +86,7 @@
     <span>恭喜你中奖了！</span>
 		<span class="integrals"> <i class="font28">{{shake.customName}}</i>
 		</span>
-    <a href="{{ykmycenterurl}}" class="entercenter">进入个人中心查看</a>
+    <a href="/customize/shop/?v=1.0#/infoCenter" class="entercenter">进入个人中心查看</a>
     <!-- <span class="entercenter">进入个人中心查看</span> -->
     <em class="iconfont icon-guanbi font28" ng-click="shake.showcustom=false;"></em>
   </div>
