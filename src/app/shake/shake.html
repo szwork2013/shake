@@ -6,7 +6,7 @@
   </div>
   <div class="shakebg"></div>
   <div class="shakenum">
-    今天还能摇&nbsp;
+    {{shake.shakeLeftNm}}&nbsp;
     <span class="shake numplus">{{shake.hasshaketotals}}</span>
     &nbsp;次
   </div>
@@ -51,7 +51,6 @@
       <span class="activepitytitle margintop30">真遗憾！</span>
       <span class="activepitytitle">您的积分不足 !</span>
       <span class="activepitytitle">请明天再来。</span>
-      <!-- <a class="shakeagine activepitytitle" href="#/productList/////time_desc/">随便逛逛</a> -->
       <em class="iconfont icon-guanbi font28" ng-click="shake.closeNoPointBtn()"></em>
     </div>
   </div>
@@ -70,7 +69,6 @@
       <span class="onehundredtime">有效期：{{shake.couponName.cardcoupon_start}}至{{shake.couponName.cardcoupon_end}}</span>
     </div>
     <a href="/customize/shop/?v=1.0#/infoCenter" class="entercenter">进入个人中心查看</a>
-    <!-- <span class="entercenter">进入个人中心查看</span> -->
     <em class="iconfont icon-guanbi font28" ng-click="shake.showintegral=false;"></em>
   </div>
   <!-- 积分中奖界面 -->
@@ -78,7 +76,6 @@
     <span>恭喜你中奖了！</span>
     <span class="integrals"><i class="titlesz50">{{shake.Points}}</i>积分</span>
     <a href="/customize/shop/?v=1.0#/infoCenter" class="entercenter">进入个人中心查看</a>
-    <!-- <span class="entercenter">进入个人中心查看</span> -->
     <em class="iconfont icon-guanbi font28" ng-click="shake.showpoints=false;"></em>
   </div>
   <!-- 自定义中奖界面 -->
@@ -87,18 +84,12 @@
 		<span class="integrals"> <i class="font28">{{shake.customName}}</i>
 		</span>
     <a href="/customize/shop/?v=1.0#/infoCenter" class="entercenter">进入个人中心查看</a>
-    <!-- <span class="entercenter">进入个人中心查看</span> -->
     <em class="iconfont icon-guanbi font28" ng-click="shake.showcustom=false;"></em>
   </div>
   <!-- 推荐商品 -->
   <div class="sopity" ng-if="shake.hasnocounts">
-    <!-- <span class="titlesz26 yellowcolor">真遗憾！</span> -->
-    <span class="yellowcolor">真遗憾！今日次数用完！<br>给您推荐一款热卖单品！</span>
-    <!-- <span>推荐给亲一款热卖单品！</span> -->
-    <div class="recommend">
-      <img src="{{mathproduct.img_url}}" alt="" ui-sref="productDetail({productId:mathproduct.product_id,sale:0})">
-    </div>
-    <!-- <span class="vieworder" ui-sref="productDetail({productId:mathproduct.product_id,sale:0})">今日推荐</span> -->
+    <span class="iconfont icon-henyihan margintop30"></span>
+    <span class="yellowcolor">真遗憾！今日次数用完！</span>
     <span class="shakeagainten" ng-if="shake.isMutiShake!=1" ng-click="shake.shakeUsePoint()">{{shake.shouldusepoints}}积分再摇1次</span>
     <em class="iconfont icon-guanbi font28" ng-click="shake.hasnocounts=false;shake.useTen=false;"></em>
   </div>

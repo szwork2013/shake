@@ -249,9 +249,9 @@
   // 推荐商品css
   .sopity{
     width: 84%;
-    // height: 84%;
     position: fixed;
-    bottom: 8%;
+//    bottom: 8%;
+    bottom: 30%;
     left: 50%;
     margin-left: -42%;
     background: rgba(0, 0, 0, 0.8);
@@ -260,6 +260,12 @@
     color: #fff;
     text-align: center;
     padding: 14px 20px;
+    .margintop30{
+      display:block;
+      font-size: 80px;
+    //  margin-top: 10px;
+      margin-top: 30px;
+    }
     .yellowcolor{
       color:#FFBD1E
     }

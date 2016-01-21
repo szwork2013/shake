@@ -13,7 +13,6 @@
   //  vm.title=decodeURIComponent($stateParams.brand);  //这里可以传进来是哪里的摇一摇
     vm.titleNm='';
     vm.activeID=$stateParams.activityId; // 活动的ID
-    //vm.activeID='419338';
     vm.isable=1;
     vm.useTen=false;
     vm.award_datas=[];
@@ -31,6 +30,7 @@
     vm.noPostage=[];
     vm.couponName=[];
     vm.isStarted=0;  //是否到了抽奖或者过了抽奖时间  0表示正常 1表示还没到抽奖时间，2表示过了抽奖时间
+    vm.shakeLeftNm='0';//0是每人多少次，1是每天多少次
 
     vm.shownoresult=false; //关闭未中奖界面
     vm.hasnopoints=false; //没有抽中奖没有积分可以抽奖页面开关
@@ -135,9 +135,15 @@
             }, 2000);
            // alert('未找到抽奖活动，请与管理员联系');
           }else{
-            vm.award_datas=data.Result.awards;
+            vm.award_datas=data.Result.awards;//获取奖项信息
             vm.active_data=data.Result;
-            vm.titleNm=data.Result.websiteownername;
+            //luckLimitType  参与次数类型，0是每人多少次，1是每天多少次
+            if(data.Result.luckLimitType==0){
+              vm.shakeLeftNm='您还能摇';
+            }else if(data.Result.luckLimitType==1){
+              vm.shakeLeftNm='今天还能摇';
+            }
+            vm.titleNm=data.Result.websiteownername; //获取站点名称
             var today=(new Date()).getTime();
             var startTime=(new Date(data.Result.startTime)).getTime();
             var endTime=(new Date(data.Result.endTime)).getTime();
@@ -345,45 +351,19 @@
             vm.useTen=false;
           },2000);
           console.log('开始抽奖',data);
-          //隐藏抽奖等待
-          //$ionicLoading.hide();
           // 中奖
           if (data.isAward == true) {
             // 获取抽奖信息
             vm.getAwardInfo(data);
-
-           // alert(data.awardsType);
-           // // 0是自定义、1是积分、2是优惠卷
-           // if(data.awardsType == 0){
-           //   vm.customName=data.awardName;
-           //   vm.showcustom=true;
-           // }else if (data.awardsType == 1) {
-           //   vm.Points=data.value;
-           //   vm.showpoints=true;
-           // }else if(data.awardsType == 2) {
-           //   vm.showintegral = true;
-           //   // 免邮费和满多少减多少暂时分开
-           //   if(data.cardcoupon_type=='MallCardCoupon_FreeFreight'){
-           //     vm.hasnopostage=true;
-           //     vm.hascoupons=false;
-           //     vm.noPostage=data;
-           //   }else{
-           //     vm.hasnopostage=false;
-           //     vm.hascoupons=true;
-           //     vm.couponName=data;
-           //   }
-           // }
           }
           // 未中奖
           else {
+            alert(Json.stringfy(data));
             wLoading.hide();
             // 活动状态正常
             if(data.errorCode==0){
               // 获取抽奖信息
               vm.getPrizeInfo();
-              //vm.shownoresult=true;
-              //vm.hasnopoints=false;
-              //vm.nowinning=true;
             }
             // 活动未开启
             else if(data.errorCode==10025){
@@ -404,6 +384,14 @@
             // 活动奖品全部中完了
             else if(data.errorCode==10027){
               wLoading.show("活动奖品全部被人领走咯");
+              $timeout(function () {
+                wLoading.hide()
+              }, 2000);
+              //alert('活动奖品全部被人领走咯');
+            }
+            // 活动奖品
+            else if(data.errorCode==10028){
+              wLoading.show("次数超限");
               $timeout(function () {
                 wLoading.hide()
               }, 2000);
@@ -528,48 +516,94 @@
     //    console.log(["获取商品列表请求失败", data]);
     //  })
     //}
+   // getCurrUserInfo();
     //获取当前用户信息
     function getCurrUserInfo(){
-      mixbluAPI.currentUserInfo("/user/info.ashx",{
-        action:"currentuserinfo"
-      },function(data){
-        console.log(['data.totalscore',data.totalscore])
-        // $scope.totalscore = data.totalscore;
-        // 当可用积分大于每次抽奖所需的积分时
-        if(data.totalscore>=vm.shouldusepoints){
-          if(vm.isStarted==0){
-            startShake();
-            wLoading.show('抽奖中,请稍后...');
-          }else if(vm.isStarted==1){
-            wLoading.show("活动还未开启");
-            $timeout(function () {
-              wLoading.hide();
-            }, 2000);
+      nAPI.userInfo('')
+        .then(function(data){
+          console.log(['data.totalscore',data.totalscore]);
+          // $scope.totalscore = data.totalscore;
+          // 当可用积分大于每次抽奖所需的积分时
+          if(data.totalscore>=vm.shouldusepoints){
+            if(vm.isStarted==0){
+              startShake();
+              wLoading.show('抽奖中,请稍后...');
+            }else if(vm.isStarted==1){
+              wLoading.show("活动还未开启");
+              $timeout(function () {
+                wLoading.hide();
+              }, 2000);
+            }
+            else if(vm.isStarted==2){
+              wLoading.show("活动还未开启");
+              $timeout(function () {
+                wLoading.hide();
+              }, 2000);
+            }
+            //wLoading.show("抽奖中,请稍后...");
+            //$timeout(function () {
+            //  wLoading.hide()
+            //}, 500);
+            //$ionicLoading.show({
+            //  template: "抽奖中,请稍后..."
+            //});
           }
-          else if(vm.isStarted==2){
-            wLoading.show("活动还未开启");
-            $timeout(function () {
-              wLoading.hide();
-            }, 2000);
+          // 当积分小于每次抽奖所需的积分时
+          else {
+          //  alert('积分不足');
+            vm.shownoresult = true;
+            vm.hasnopoints=true;
+            vm.nowinning=false;
           }
-          //wLoading.show("抽奖中,请稍后...");
-          //$timeout(function () {
-          //  wLoading.hide()
-          //}, 500);
-          //$ionicLoading.show({
-          //  template: "抽奖中,请稍后..."
-          //});
-        }
-        // 当积分小于每次抽奖所需的积分时
-        else {
-          vm.shownoresult = true;
-          vm.hasnopoints=true;
-          vm.nowinning=false;
-        }
-        console.log(["获取积分成功",data]);
-      },function(data){
-        console.log(["获取积分请求失败",data]);
-      });
+          console.log(["获取积分成功",data]);
+        })
+        .catch(function(data){
+         // alert('积分');
+          console.log(["获取积分请求失败",data]);
+        });
+      //mixbluAPI.currentUserInfo("/user/info.ashx",{
+      //  action:"currentuserinfo"
+      //},function(data){
+      //  console.log(['data.totalscore',data.totalscore]);
+      //  // $scope.totalscore = data.totalscore;
+      //  alert('积分足');
+      //  // 当可用积分大于每次抽奖所需的积分时
+      //  if(data.totalscore>=vm.shouldusepoints){
+      //    if(vm.isStarted==0){
+      //      startShake();
+      //      wLoading.show('抽奖中,请稍后...');
+      //    }else if(vm.isStarted==1){
+      //      wLoading.show("活动还未开启");
+      //      $timeout(function () {
+      //        wLoading.hide();
+      //      }, 2000);
+      //    }
+      //    else if(vm.isStarted==2){
+      //      wLoading.show("活动还未开启");
+      //      $timeout(function () {
+      //        wLoading.hide();
+      //      }, 2000);
+      //    }
+      //    //wLoading.show("抽奖中,请稍后...");
+      //    //$timeout(function () {
+      //    //  wLoading.hide()
+      //    //}, 500);
+      //    //$ionicLoading.show({
+      //    //  template: "抽奖中,请稍后..."
+      //    //});
+      //  }
+      //  // 当积分小于每次抽奖所需的积分时
+      //  else {
+      //    alert('积分不足');
+      //    vm.shownoresult = true;
+      //    vm.hasnopoints=true;
+      //    vm.nowinning=false;
+      //  }
+      //  console.log(["获取积分成功",data]);
+      //},function(data){
+      //  alert('请求失败');
+      //  console.log(["获取积分请求失败",data]);
+      //});
     }
     //检测手机支不支持摇一摇功能
     function deviceMotionHandler(eventData) {
@@ -594,7 +628,7 @@
            // 请求活动详情的参数
            nAPI.getLotteryInfo(vm.activeID)
              .then(function(data){
-               console.log(data)
+               console.log(data);
                // 此处为判断是否有活动
                if(data.Status!=0){
                  wLoading.show("未找到抽奖活动，请与管理员联系");
@@ -622,11 +656,14 @@
                  else if((data.Result.luckRest)<=0){
                    // 设置总的摇奖次数为0
                    vm.hasshaketotals=0;
+                  // alert(vm.useTen);
                    // 再判断用户是否还需要再用积分来摇一摇
                    if(vm.useTen==true){
                      //获取可使用积分
+                    // alert('用积分');
                      getCurrUserInfo();
                    }else {
+                    // alert('没有用积分');
                      vm.hasnocounts=true;
                      //  getProductList();
                      setTimeout(function() {
