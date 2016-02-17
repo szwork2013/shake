@@ -7,13 +7,11 @@
   <div class="shakebg"></div>
   <div class="shakenum">
     {{shake.shakeLeftNm}}&nbsp;
-    <span class="shake numplus">{{shake.hasshaketotals}}</span>
+    <span class="shake numplus">{{shake.result}}</span>
     &nbsp;次
   </div>
   <div class="shakebt">
-    <!--<a class="mycenter nounderline" href="{{shake.ykmycenterurl}}" style="color:#fff !important;">个人中心</a>-->
-    <!--<a class="goshoping"  href="#/productList/////time_desc/">逛逛商铺</a>-->
-    <div class="row row-reset">
+    <div class="row row-reset" ng-if="shake.dataInfo.toolbarbutton!=''">
       <div class="col" ng-class="{colreset:$index!=shake.buttons.length-1}" ng-repeat="button in shake.buttons" ng-click="shake.goToLink(button)">
         {{button.navigation_name}}
       </div>
@@ -24,74 +22,68 @@
   <audio src="assets/shake.mp3" id="showAudio" preload="auto"></audio>
   <!-- 活动规则 -->
   <div class="activerulecontent" ng-if="shake.showactive">
-    <!-- <div ng-bind-html="relustxt"></div> -->
     <span class="activeruletitle">活动时间：</span>
-    <span>{{shake.active_data.startTime}}~{{shake.active_data.endTime}}</span>
+    <span>{{shake.dataInfo.startTime}}~{{shake.dataInfo.endTime}}</span>
     <span class="activeruletitle">奖项说明：</span>
     <span ng-repeat="award in shake.award_datas">{{award.PrizeName}}：{{award.Description}}</span>
-    <!-- <span>一等奖：Apple Watch</span>
-        <span>二等奖：T恤</span>
-        <span>三等奖：购物袋</span>
-        <span>四等奖：10元无门槛优惠券</span> -->
     <span class="activeruletitle">活动说明：</span>
     <span ng-bind-html="shake.active_data.content"></span>
 
     <em class="iconfont icon-guanbi font28" ng-click="shake.showactive=false;"></em>
   </div>
-  <!-- 抽奖未中奖界面 1shake.shownoresult 2shake.nowinning -->
-  <div class="activepity" ng-if="shake.shownoresult">
-    <div ng-if="shake.nowinning">
+  <!-- 抽奖未中奖界面 1shake.shownoresult 2shake.nowinning 3shake.hasnopoints-->
+  <div class="activepity" ng-if="shake.showNoPoint||shake.showLostLottery">
+    <div ng-if="shake.showLostLottery">
       <span class="iconfont icon-henyihan margintop30"></span>
       <span class="activepitytitle margintop30" style="margin-bottom:20px;">真遗憾！离大奖就一步之遥了， 换个姿势再摇一次。</span>
-      <span class="shakeagine activepitytitle" ng-click="shake.shownoresult=false;">再摇一次</span>
-      <em class="iconfont icon-guanbi font28" ng-click="shake.shownoresult=false;"></em>
+      <span class="shakeagine activepitytitle" ng-click="shake.showLostLottery=false;shake.isCouldShake = true">再摇一次</span>
+      <em class="iconfont icon-guanbi font28" ng-click="shake.showLostLottery=false;shake.isCouldShake = true"></em>
     </div>
-    <div ng-if="shake.hasnopoints">
+    <div ng-if="shake.showNoPoint">
       <span class="iconfont icon-henyihan margintop30"></span>
       <span class="activepitytitle margintop30">真遗憾！</span>
       <span class="activepitytitle">您的积分不足 !</span>
-      <span class="activepitytitle">请明天再来。</span>
-      <em class="iconfont icon-guanbi font28" ng-click="shake.closeNoPointBtn()"></em>
+      <span class="activepitytitle">{{shake.showNoPointNm}}。</span>
+      <em class="iconfont icon-guanbi font28" ng-click="shake.showNoPoint=false;shake.isCouldShake = true"></em>
     </div>
   </div>
-  <!-- 优惠卷中奖界面 -->
-  <div class="activeintegral" ng-if="shake.showintegral">
+  <!-- 优惠券中奖界面 1shake.showintegral 2shake.hasnopostage 3shake.hascoupons-->
+  <div class="activeintegral" ng-if="shake.showCoupon||shake.showFull">
     <span>恭喜你中奖了！</span>
     <!-- 免邮劵 -->
-    <div class="freepostage" ng-if="shake.hasnopostage">
-      <span class="freepostagetitle">{{shake.noPostage.cardcoupon_name}}</span>
-      <span class="freepostagetime">有效期：{{shake.noPostage.cardcoupon_start}}至{{shake.noPostage.cardcoupon_end}}</span>
+    <div class="freepostage" ng-if="shake.showCoupon">
+      <span class="freepostagetitle">{{shake.awardInfo.cardcoupon_name}}</span>
+      <span class="freepostagetime">有效期：{{shake.awardInfo.cardcoupon_start}}至{{shake.awardInfo.cardcoupon_end}}</span>
     </div>
     <!-- 100元券 -->
-    <div class="onehundred" ng-if="shake.hascoupons">
+    <div class="onehundred" ng-if="shake.showFull">
       <!-- <span class="money">￥<i>{{price}}</i></span> -->
-      <span class="onehundredtitle">{{shake.couponName.cardcoupon_name}}</span>
-      <span class="onehundredtime">有效期：{{shake.couponName.cardcoupon_start}}至{{shake.couponName.cardcoupon_end}}</span>
+      <span class="onehundredtitle">{{shake.awardInfo.cardcoupon_name}}</span>
+      <span class="onehundredtime">有效期：{{shake.awardInfo.cardcoupon_start}}至{{shake.awardInfo.cardcoupon_end}}</span>
     </div>
     <a href="/customize/shop/?v=1.0#/infoCenter" class="entercenter">进入个人中心查看</a>
-    <em class="iconfont icon-guanbi font28" ng-click="shake.showintegral=false;"></em>
+    <em class="iconfont icon-guanbi font28" ng-click="shake.showCoupon=false;shake.showFull=false;shake.isCouldShake = true"></em>
   </div>
-  <!-- 积分中奖界面 -->
-  <div class="activeintegral" ng-if="shake.showpoints">
+  <!-- 积分中奖界面 1shake.showpoints-->
+  <div class="activeintegral" ng-if="shake.showPoints">
     <span>恭喜你中奖了！</span>
-    <!--<span class="integrals"><i class="titlesz50">{{shake.Points}}</i>积分</span>-->
-    <span class="integrals"><i class="titlesz50">{{shake.Points}}</i></span>
+    <span class="integrals"><i class="titlesz50">{{shake.awardInfo.awardName}}</i></span>
     <!--<a href="/customize/shop/?v=1.0#/infoCenter" class="entercenter">进入个人中心查看</a>-->
-    <em class="iconfont icon-guanbi font28" ng-click="shake.showpoints=false;"></em>
+    <em class="iconfont icon-guanbi font28" ng-click="shake.showPoints=false;shake.isCouldShake = true"></em>
   </div>
   <!-- 自定义中奖界面 -->
-  <div class="activeintegral" ng-if="shake.showcustom">
+  <div class="activeintegral" ng-if="shake.showCustomize">
     <span>恭喜你中奖了！</span>
-		<span class="integrals"> <i class="font28">{{shake.customName}}</i>
+		<span class="integrals"> <i class="font28">{{shake.awardInfo.awardName}}</i>
 		</span>
     <a href="/customize/shop/?v=1.0#/infoCenter" class="entercenter">进入个人中心查看</a>
-    <em class="iconfont icon-guanbi font28" ng-click="shake.showcustom=false;"></em>
+    <em class="iconfont icon-guanbi font28" ng-click="shake.showCustomize=false;shake.isCouldShake = true"></em>
   </div>
   <!-- 推荐商品 -->
-  <div class="sopity" ng-if="shake.hasnocounts">
+  <div class="sopity" ng-if="shake.showNoTimes">
     <span class="iconfont icon-henyihan margintop30"></span>
-    <span class="yellowcolor">真遗憾！今日次数用完！</span>
-    <span class="shakeagainten" ng-if="shake.isMutiShake!=1" ng-click="shake.shakeUsePoint()">{{shake.shouldusepoints}}积分再摇1次</span>
-    <em class="iconfont icon-guanbi font28" ng-click="shake.hasnocounts=false;shake.useTen=false;"></em>
+    <span class="yellowcolor">真遗憾！{{shake.showNoTimeNm}}！</span>
+    <span class="shakeagainten" ng-if="shake.isShowUseScore" ng-click="shake.shakeUsePointFunc();">{{shake.dataInfo.usePoints}}积分再摇1次</span>
+    <em class="iconfont icon-guanbi font28" ng-click="shake.isUseScore=false;shake.showNoTimes=false;shake.isCouldShake = true"></em>
   </div>
 </div>
