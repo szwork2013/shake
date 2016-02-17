@@ -74,8 +74,9 @@
   <!-- 积分中奖界面 -->
   <div class="activeintegral" ng-if="shake.showpoints">
     <span>恭喜你中奖了！</span>
-    <span class="integrals"><i class="titlesz50">{{shake.Points}}</i>积分</span>
-    <a href="/customize/shop/?v=1.0#/infoCenter" class="entercenter">进入个人中心查看</a>
+    <!--<span class="integrals"><i class="titlesz50">{{shake.Points}}</i>积分</span>-->
+    <span class="integrals"><i class="titlesz50">{{shake.Points}}</i></span>
+    <!--<a href="/customize/shop/?v=1.0#/infoCenter" class="entercenter">进入个人中心查看</a>-->
     <em class="iconfont icon-guanbi font28" ng-click="shake.showpoints=false;"></em>
   </div>
   <!-- 自定义中奖界面 -->

@@ -273,7 +273,8 @@
             vm.customName=dataobj.awardName;
             vm.showcustom=true;
           }else if (dataobj.awardsType == 1) {
-            vm.Points=dataobj.value;
+            //vm.Points=dataobj.value;
+            vm.Points=dataobj.awardName;
             vm.showpoints=true;
           }else if(dataobj.awardsType == 2) {
             vm.showintegral = true;
