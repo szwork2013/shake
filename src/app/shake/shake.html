@@ -25,9 +25,9 @@
     <span class="activeruletitle">活动时间：</span>
     <span>{{shake.dataInfo.startTime}}~{{shake.dataInfo.endTime}}</span>
     <span class="activeruletitle">奖项说明：</span>
-    <span ng-repeat="award in shake.award_datas">{{award.PrizeName}}：{{award.Description}}</span>
+    <span ng-repeat="award in shake.dataInfo.awards">{{award.PrizeName}}：{{award.Description}}</span>
     <span class="activeruletitle">活动说明：</span>
-    <span ng-bind-html="shake.active_data.content"></span>
+    <span ng-bind-html="shake.dataInfo.content"></span>
 
     <em class="iconfont icon-guanbi font28" ng-click="shake.showactive=false;"></em>
   </div>

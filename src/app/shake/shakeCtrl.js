@@ -122,6 +122,7 @@
             }, 2000);
           } else {
             vm.dataInfo = data.Result;
+            console.log('vm.dataInfo',vm.dataInfo);
             //luckLimitType  参与次数类型，0是每人多少次，1是每天多少次
             if (data.Result.luckLimitType == 0) {
               vm.shakeLeftNm = '您还能摇';
@@ -205,13 +206,11 @@
             $scope.$apply(function () {
               vm.isShowUseScore = false;//不开放积分摇奖
             });
-            //vm.isShowUseScore = false;//不开放积分摇奖
           }
-          else if (vm.dataInfo.winLimitType == 1) {
+          else if (vm.dataInfo.winLimitType == 1&&vm.dataInfo.usePoints>0) {
             $scope.$apply(function () {
               vm.isShowUseScore = true;//开放积分摇奖
             });
-            //vm.isShowUseScore = true;//开放积分摇奖
           }
         }
         if (vm.dataInfo.luckRest < 0) {
@@ -354,7 +353,9 @@
               if (vm.dataInfo.luckRest == 0) {
                 vm.result = 0;
                 vm.showNoTimes = true; //显示次数不足页面
-                vm.isShowUseScore = true;//开放积分摇奖
+                if(vm.dataInfo.usePoints>0){
+                  vm.isShowUseScore = true;//开放积分摇奖
+                }
               }
               if (vm.dataInfo.luckRest < 0) {
                 vm.result = 0;
@@ -474,7 +475,9 @@
               if (vm.dataInfo.luckRest == 0) {
                 vm.result = 0;
                 vm.showNoTimes = true; //显示次数不足页面
-                vm.isShowUseScore = true;//开放积分摇奖
+                if(vm.dataInfo.usePoints>0){
+                  vm.isShowUseScore = true;//开放积分摇奖
+                }
               }
               if (vm.dataInfo.luckRest < 0) {
                 vm.result = 0;
@@ -562,7 +565,6 @@
         vm.showNoTimes = false; //关闭该弹出框
         vm.dataInfo.luckRest = vm.dataInfo.luckRest - 1; //将摇奖次数减1
         vm.isCouldShake = true;  //该参数控制手机摇动时是否调用抽奖接口
-      //vm.isCouldShake = true;  //该参数控制手机摇动时是否调用抽奖接口
     }
   }
 })();
