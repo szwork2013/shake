@@ -243,6 +243,12 @@
 
     //检测手机支不支持摇一摇功能
     function deviceMotionHandler(eventData) {
+      //if(vm.showNoPoint||vm.showLostLottery){
+        if(vm.showLostLottery){
+          vm.showLostLottery=false;
+          vm.isCouldShake = true
+        }
+      //}
       var acceleration = eventData.accelerationIncludingGravity;
       var curTime = new Date().getTime();
       if ((curTime - last_update) > 100) {
@@ -253,9 +259,11 @@
         z = acceleration.z;
         var speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
         var status = document.getElementById("status");
-        if (speed > SHAKE_THRESHOLD && vm.isCouldShake && window.location.href.indexOf('shake') >= 0) {
+        if(speed > SHAKE_THRESHOLD&&window.location.href.indexOf('shake') >= 0){
           // 摇动手机即播放音乐
           audioID.play();
+        }
+        if (speed > SHAKE_THRESHOLD && vm.isCouldShake && window.location.href.indexOf('shake') >= 0) {
           beforeShakeCheck();
         }
         last_x = x;
